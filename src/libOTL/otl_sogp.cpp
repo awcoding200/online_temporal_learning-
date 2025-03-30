@@ -48,16 +48,7 @@ void SOGP::train(const VectorXd &state, const VectorXd &output) {
     double kstar = this->kernel->eval(state);
 
     //change the output format if this is a classification problem
-    VectorXd mod_output;
-    if (this->problem_type == SOGP::CLASSIFICATION) {
-        mod_output = VectorXd::Zero(this->output_dim);
-        for (unsigned int i=0; i<this->output_dim; i++) {
-            mod_output(i) = -1;
-        }
-        mod_output(output(0)) = 1;
-    } else {
-        mod_output = output;
-    }
+    VectorXd mod_output= output;
 
     //we are just starting.
     if (this->current_size == 0) {
