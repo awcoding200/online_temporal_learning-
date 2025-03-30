@@ -97,7 +97,7 @@ namespace OTL
         }
         VectorXd ehat = this->Q.block(0, 0, this->current_size, this->current_size) * k;
 
-        double gamma = kstar - k.dot(ehat);
+        double gamma = kstar - k.dot(ehat);  // equation 21
         double eta = 1.0 / (1.0 + gamma * r);
 
         if (gamma < 1e-12)
