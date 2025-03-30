@@ -91,33 +91,6 @@ namespace OTL
             r = -1.0 / (s2 + this->noise);
             q = (mod_output - m) * (-r);
         }
-        else if (this->problem_type == SOGP::CLASSIFICATION)
-        {
-
-            double sx2 = this->noise + s2;
-            double sx = sqrt(sx2);
-            VectorXd z = VectorXd(this->output_dim);
-            VectorXd Erfz = VectorXd(this->output_dim);
-            for (unsigned int i = 0; i < this->output_dim; i++)
-            {
-                z(i) = mod_output(i) * m(i) / sx;
-                Erfz(i) = stdnormcdf(z(i));
-                // dErfz(i) = 1.0/sqrt(2*M_PI)*exp(-(z(i)*z(i))/2.0);
-                // dErfz2(i) = dErfz(i)*(-z(i));
-            }
-
-            /*
-              TO CONNTINUE
-            Erfz = Erf(z);
-
-            dErfz = 1.0/sqrt(2*pi)*exp(-(z.^2)/2);
-            dErfz2 = dErfz.*(-z);
-
-            q = y/sx * (dErfz/Erfz);
-            r = (1/sx2)*(dErfz2/dErfz - (dErfz/Erfz)^2);
-
-            */
-        }
         else
         {
             throw OTL::OTLException("Whoops! My problem type is wrong. How did this happen?");
