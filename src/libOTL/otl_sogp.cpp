@@ -246,7 +246,7 @@ namespace OTL
             // std::cout << "K: \n" << k << std::endl;
             // std::cout << "alpha: \n" << this->alpha.block(0,0,this->current_size, this->output_dim) << std::endl;
 
-            y_hat = k.transpose() * this->alpha.block(0, 0, this->current_size, this->output_dim);
+            y_hat = this->alpha.block(0, 0, this->current_size, this->output_dim).transpose() * k;
             prediction_variance = VectorXd::Ones(this->output_dim) * (k.dot(this->C.block(0, 0, this->current_size, this->current_size) * k) + kstar + this->noise);
         }
         return;
