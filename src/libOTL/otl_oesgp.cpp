@@ -76,11 +76,11 @@ namespace OTL
     \brief trains the OESGP given the current state and the output
     \param output (a VectorXd)
     */
-  void OESGP::train(const VectorXd &output)
+  void OESGP::train(const VectorXd &y)
   {
-    VectorXd state;
-    res.getState(state);
-    sogp.train(state, output);
+    VectorXd h2;
+    res.getState(h2);
+    sogp.train(h2, y);
   }
 
   /**
@@ -90,9 +90,9 @@ namespace OTL
     */
   void OESGP::predict(VectorXd &prediction, VectorXd &prediction_variance)
   {
-    VectorXd state;
-    res.getState(state);
-    sogp.predict(state, prediction, prediction_variance);
+    VectorXd h2;
+    res.getState(h2);
+    sogp.predict(h2, prediction, prediction_variance);
   }
 
   /**

@@ -167,17 +167,16 @@ namespace OTL
         return kval;
     }
 
-    void GaussianKernel::eval(const VectorXd &x, const std::vector<VectorXd> &Y,
-                              VectorXd &kern_vals)
+    void GaussianKernel::eval(const VectorXd &h2, const std::vector<VectorXd> &basis_vectors, VectorXd &k)
     {
-        if (Y.size() == 0)
+        if (basis_vectors.size() == 0)
         {
             throw OTLException("The vector Y should have nonzero size.");
         }
-        kern_vals.resize(Y.size());
-        for (unsigned int i = 0; i < Y.size(); i++)
+        k.resize(basis_vectors.size());
+        for (unsigned int i = 0; i < basis_vectors.size(); i++)
         {
-            kern_vals(i) = this->eval(x, Y[i]);
+            k(i) = this->eval(h2, basis_vectors[i]);
         }
     }
 

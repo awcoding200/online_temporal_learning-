@@ -44,7 +44,7 @@ namespace OTL
             delete this->kernel;
     }
 
-    void SOGP::train(const VectorXd &state, const VectorXd &output)
+    void SOGP::train(const VectorXd &h2, const VectorXd &y)
     {
         // check if we have initialised the system
         if (!this->initialized)
@@ -52,25 +52,25 @@ namespace OTL
             throw OTLException("SOGP not yet initialised");
         }
 
-        double kstar = this->kernel->eval(state);
+        double kstar = this->kernel->eval(h2);
 
         // change the output format if this is a classification problem
-        VectorXd mod_output = output;
+        VectorXd mod_y = y;
 
         // we are just starting.
         if (this->current_size == 0)
         {
-            this->alpha.block(0, 0, 1, this->output_dim) = (mod_output.array() / (kstar + this->noise)).transpose();
+            this->alpha.block(0, 0, 1, this->output_dim) = (mod_y.array() / (kstar + this->noise)).transpose();
             this->C.block(0, 0, 1, 1) = VectorXd::Ones(1) * -1 / (kstar + this->noise);
             this->Q.block(0, 0, 1, 1) = VectorXd::Ones(1) * 1 / (kstar);
-            this->basis_vectors.push_back(state);
+            this->basis_vectors.push_back(h2);
             this->current_size++;
             return;
         }
 
         // Test if this is a "novel" state
         VectorXd k;
-        this->kernel->eval(state, this->basis_vectors, k);
+        this->kernel->eval(h2, this->basis_vectors, k);
         // cache Ck
         VectorXd Ck = this->C.block(0, 0, this->current_size, this->current_size) * k;
 
@@ -89,7 +89,7 @@ namespace OTL
         if (this->problem_type == SOGP::REGRESSION)
         {
             r = -1.0 / (s2 + this->noise);
-            q = (mod_output - m) * (-r);
+            q = (mod_y - m) * (-r);
         }
         else
         {
@@ -97,7 +97,7 @@ namespace OTL
         }
         VectorXd ehat = this->Q.block(0, 0, this->current_size, this->current_size) * k;
 
-        double gamma = kstar - k.dot(ehat);  // equation 21
+        double gamma = kstar - k.dot(ehat); // equation 21
         double eta = 1.0 / (1.0 + gamma * r);
 
         if (gamma < 1e-12)
@@ -128,7 +128,7 @@ namespace OTL
             C.block(0, 0, this->current_size + 1, this->current_size + 1) = diffC;
 
             // add to basis vectors
-            this->basis_vectors.push_back(state);
+            this->basis_vectors.push_back(h2);
 
             // increment current size
             this->current_size++;
@@ -222,7 +222,7 @@ namespace OTL
         this->current_size = end;
     }
 
-    void SOGP::predict(const VectorXd &state, VectorXd &prediction,
+    void SOGP::predict(const VectorXd &h2, VectorXd &y_hat,
                        VectorXd &prediction_variance)
     {
         // check if we have initialised the system
@@ -231,26 +231,24 @@ namespace OTL
             throw OTLException("SOGP not yet initialised");
         }
 
-        double kstar = kernel->eval(state, state);
+        double kstar = kernel->eval(h2, h2);
 
         // check if we not been trained
         if (this->current_size == 0)
         {
-            prediction = VectorXd::Zero(this->output_dim);
-            prediction_variance = VectorXd::Ones(this->output_dim) *
-                                  (kstar + this->noise);
-            return;
+            y_hat = VectorXd::Zero(this->output_dim);
+            prediction_variance = VectorXd::Ones(this->output_dim) * (kstar + this->noise);
         }
+        else
+        {
+            VectorXd k;
+            kernel->eval(h2, this->basis_vectors, k);
+            // std::cout << "K: \n" << k << std::endl;
+            // std::cout << "alpha: \n" << this->alpha.block(0,0,this->current_size, this->output_dim) << std::endl;
 
-        VectorXd k;
-        kernel->eval(state, this->basis_vectors, k);
-        // std::cout << "K: \n" << k << std::endl;
-        // std::cout << "alpha: \n" << this->alpha.block(0,0,this->current_size, this->output_dim) << std::endl;
-
-        prediction = k.transpose() * this->alpha.block(0, 0, this->current_size, this->output_dim);
-        prediction_variance = VectorXd::Ones(this->output_dim) *
-                              (k.dot(this->C.block(0, 0, this->current_size, this->current_size) * k) + kstar + this->noise);
-
+            y_hat = k.transpose() * this->alpha.block(0, 0, this->current_size, this->output_dim);
+            prediction_variance = VectorXd::Ones(this->output_dim) * (k.dot(this->C.block(0, 0, this->current_size, this->current_size) * k) + kstar + this->noise);
+        }
         return;
     }
 

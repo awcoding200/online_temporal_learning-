@@ -67,32 +67,33 @@ int main(void)
         // note that we use Eigen VectorXd objects
         // look at http://eigen.tuxfamily.org for more information about Eigen
         VectorXd input(1); // the 1 is the size of the vector
-        VectorXd output(1);
+        VectorXd y(1);
 
         VectorXd state;
-        VectorXd prediction;
+        VectorXd y_hat;
         VectorXd prediction_variance;
 
         for (unsigned int i = 0; i < max_itr; i++)
         {
 
             // create the input and output
-            input(0) = sin(i * 0.01);
-            output(0) = sin((i + 1) * 0.01);
+            // input(0) =  i;
+            input(0) =  sin(i * 0.01);
+            y(0) = sin((i + 1) * 0.01);
 
             // update the OESGP with the input
             oesgp.update(input);
 
             // predict the next state
-            oesgp.predict(prediction, prediction_variance);
+            oesgp.predict(y_hat, prediction_variance);
 
             // print the error
-            double error = (prediction - output).norm();
+            double error = (y_hat - y).norm();
             cout << "Error: " << error << ", |BV|: "
                  << oesgp.getCurrentSize() << endl;
 
             // train with the true next state
-            oesgp.train(output);
+            oesgp.train(y);
         }
 
         cout << "Testing saving and loading model " << std::endl;
@@ -110,14 +111,14 @@ int main(void)
         for (unsigned int i = max_itr; i < max_itr + 50; i++)
         {
             input(0) = sin(i * 0.01);
-            output(0) = sin((i + 1) * 0.01);
+            y(0) = sin((i + 1) * 0.01);
 
             // update
             oesgp2.update(input);
 
             // predict
-            oesgp2.predict(prediction, prediction_variance);
-            double error = (prediction - output).norm();
+            oesgp2.predict(y_hat, prediction_variance);
+            double error = (y_hat - y).norm();
             cout << "Error: " << error << endl;
         }
     }

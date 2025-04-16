@@ -174,19 +174,19 @@ private:
 
     //Reservoir
     /** the input weights **/
-    MatrixXd input_weights;
+    MatrixXd W_in;
 
     /** the output feedback weights **/
     MatrixXd output_feedback_weights;
 
     /** the neuron reservoir weights **/
-    MatrixXd reservoir_weights;
+    MatrixXd W;
 
     /** the current reservoir state  **/
-    VectorXd curr_reservoir_state;
+    VectorXd xn;
 
     /** augmented reservoir state **/
-    VectorXd state;
+    VectorXd h2;
     unsigned int state_size;
 
     void activation(VectorXd &inputs, VectorXd &results);

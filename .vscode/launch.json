@@ -1,0 +1,18 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug oesgp_sin",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/oesgp_sin",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "preLaunchTask": "Build oesgp_sin"
+        }
+    ]
+}
