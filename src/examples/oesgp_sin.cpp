@@ -25,8 +25,8 @@ int main(void)
 
     // Problem parameters
     // we want to predict a simple sine wave
-    int input_dim = 1;
-    int output_dim = 1;
+    int input_dim = 2;
+    int y_dim = 2;
 
     // Reservoir Parameters
     // you can change these to see how it affects the predictions
@@ -52,7 +52,7 @@ int main(void)
     try
     {
         // Initialise our OESGP
-        oesgp.init(input_dim, output_dim, reservoir_size,
+        oesgp.init(input_dim, y_dim, reservoir_size,
                    input_weight, output_feedback_weight,
                    activation_function,
                    leak_rate,
@@ -66,8 +66,8 @@ int main(void)
 
         // note that we use Eigen VectorXd objects
         // look at http://eigen.tuxfamily.org for more information about Eigen
-        VectorXd input(1); // the 1 is the size of the vector
-        VectorXd y(1);
+        VectorXd input(input_dim); // the 1 is the size of the vector
+        VectorXd y(y_dim);
 
         VectorXd state;
         VectorXd y_hat;
@@ -79,7 +79,9 @@ int main(void)
             // create the input and output
             // input(0) =  i;
             input(0) =  sin(i * 0.01);
+            input(1) = 1.0; // bias term
             y(0) = sin((i + 1) * 0.01);
+            y(1) = 1.0; // bias term
 
             // update the OESGP with the input
             oesgp.update(input);
