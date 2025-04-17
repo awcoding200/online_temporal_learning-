@@ -74,7 +74,7 @@ namespace OTL
         // cache Ck
         VectorXd Ck = this->C.block(0, 0, this->current_size, this->current_size) * k;
 
-        VectorXd m = k.transpose() * this->alpha.block(0, 0, this->current_size, this->output_dim);
+        VectorXd m = this->alpha.block(0, 0, this->current_size, this->output_dim).transpose() * k;
         double s2 = kstar + (k.dot(Ck));
 
         if (s2 < 1e-12)
