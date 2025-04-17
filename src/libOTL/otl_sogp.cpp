@@ -86,18 +86,13 @@ namespace OTL
         double r = 0.0;
         VectorXd q;
 
-        if (this->problem_type == SOGP::REGRESSION)
-        {
-            r = -1.0 / (s2 + this->noise);
-            q = (mod_y - m) * (-r);
-        }
-        else
-        {
-            throw OTL::OTLException("Whoops! My problem type is wrong. How did this happen?");
-        }
+        r = -1.0 / (s2 + this->noise);
+        q = (mod_y - m) * (-r);
+
         VectorXd ehat = this->Q.block(0, 0, this->current_size, this->current_size) * k;
 
         double gamma = kstar - k.dot(ehat); // equation 21
+        
         double eta = 1.0 / (1.0 + gamma * r);
 
         if (gamma < 1e-12)
