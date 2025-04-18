@@ -44,7 +44,7 @@ namespace OTL
             delete this->kernel;
     }
 
-    void SOGP::train(const VectorXd &h2, const VectorXd &y)
+    void SOGP::train(const VectorXd &h2, const VectorXd &h3)
     {
         // check if we have initialised the system
         if (!this->initialized)
@@ -54,13 +54,11 @@ namespace OTL
 
         double kstar = this->kernel->eval(h2);
 
-        // change the output format if this is a classification problem
-        VectorXd mod_y = y;
 
         // we are just starting.
         if (this->current_size == 0)
         {
-            this->alpha.block(0, 0, 1, this->output_dim) = (mod_y.array() / (kstar + this->noise)).transpose();
+            this->alpha.block(0, 0, 1, this->output_dim) = (h3.array() / (kstar + this->noise)).transpose();
             this->C.block(0, 0, 1, 1) = VectorXd::Ones(1) * -1 / (kstar + this->noise);
             this->Q.block(0, 0, 1, 1) = VectorXd::Ones(1) * 1 / (kstar);
             this->basis_vectors.push_back(h2);
@@ -87,7 +85,7 @@ namespace OTL
         VectorXd q;
 
         r = -1.0 / (s2 + this->noise);
-        q = (mod_y - m) * (-r);
+        q = (h3 - m) * (-r);
 
         VectorXd ehat = this->Q.block(0, 0, this->current_size, this->current_size) * k;
 
