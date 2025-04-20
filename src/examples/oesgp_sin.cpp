@@ -45,7 +45,7 @@ int main(void)
     // SOGP parameters
     double noise = 0.01;
     double epsilon = 1e-3;
-    int capacity = 200;
+    int capacity = 100;
 
     int random_seed = 0;
 
