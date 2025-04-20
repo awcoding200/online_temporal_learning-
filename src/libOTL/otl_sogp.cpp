@@ -54,7 +54,6 @@ namespace OTL
 
         double kstar = this->kernel->eval(h2);
 
-
         // we are just starting.
         if (this->current_size == 0)
         {
@@ -90,7 +89,7 @@ namespace OTL
         VectorXd ehat = this->Q.block(0, 0, this->current_size, this->current_size) * k;
 
         double gamma = kstar - k.dot(ehat); // equation 21
-        
+
         double eta = 1.0 / (1.0 + gamma * r);
 
         if (gamma < 1e-12)
@@ -136,8 +135,7 @@ namespace OTL
             alpha.block(0, 0, this->current_size, this->output_dim) = diffAlpha;
 
             // update C
-            MatrixXd diffC = C.block(0, 0, this->current_size, this->current_size) +
-                             r * eta * (s * s.transpose());
+            MatrixXd diffC = C.block(0, 0, this->current_size, this->current_size) + r * eta * (s * s.transpose());
             C.block(0, 0, this->current_size, this->current_size) = diffC;
         }
 
